@@ -1,0 +1,71 @@
+#container {
+    width: 25vw;
+    border: 8px solid rgb(153, 153, 153);
+    border-radius: 10px;
+    margin: 30px auto;
+    background-color: rgb(230, 224, 224);
+    height: 35vw;
+    display: flex;
+    flex-direction: column;
+}
+
+#screen {
+    font-size: 30px;
+    text-align: right;
+    padding: 10px;
+    margin: 20px;
+    border-radius: 4px;
+    background-color: rgb(67, 65, 73);
+    color: rgb(13, 179, 13);
+    font-weight: 700;
+    overflow: hidden;
+}
+
+#buttons {
+    padding: 3px;
+    flex-grow: 1;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    grid-template-rows: 1fr 1fr 1fr 1fr 1fr;
+    grid-gap: 3px;
+}
+
+#zero {
+    grid-column: 1/3;
+}
+
+button {
+    font-size: 25px;
+    font-weight: 900;
+    border: 1px solid #d4d0d0;
+    transition: 0.3s;
+    border-radius: 5px;
+}
+
+button:hover {
+    cursor: pointer;
+}
+
+.btn-other {
+    background-color: rgb(170, 195, 212);
+}
+
+.btn-other:hover {
+    background-color: rgb(117, 149, 170);
+}
+
+.btn-number {
+    background-color: rgb(175, 212, 170);
+}
+
+.btn-number:hover {
+    background-color: rgb(136, 170, 117);
+}
+
+.btn-operator {
+    background-color: rgb(212, 182, 170);
+}
+
+.btn-operator:hover {
+    background-color: rgb(170, 129, 117);
+}
