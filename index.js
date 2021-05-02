@@ -51,8 +51,15 @@ const status = {
     wait: 'operator',
     input: true,
 }
-document.querySelectorAll('button').forEach((btn) =>
-    btn.addEventListener('click', userPressButton));
+document.querySelectorAll('button').forEach((btn) => {
+    btn.addEventListener('click', userPressButton);
+});
+document.addEventListener('keydown', (e) => {
+    const btn = document.querySelector(`button[data-key="${e.keyCode}"]`)
+    if (btn) btn.click();
+});
+
+
 
 const screen = document.querySelector('#screen');
 
@@ -148,5 +155,4 @@ function userPressButton(event) {
 /*
 TODO:
 1)min/max input
-2)key binds
 */
