@@ -1,17 +1,25 @@
+const maxLength = 12;
+
+function round(operationResult) {
+    const len = maxLength - (parseInt(operationResult) + "").length - 1;
+    return Math.round(operationResult * Math.pow(10, len)) / Math.pow(10, len);
+}
+
 function add(a, b) {
     return a + b;
 }
 
 function subtract(a, b) {
-    return a - b;
+    return round(a - b);
 }
 
 function multiply(a, b) {
     return a * b;
 }
 
+
 function divide(a, b) {
-    return a / b;
+    return round(a / b);
 }
 
 function operate(operator, a, b) {
@@ -36,6 +44,7 @@ function operate(operator, a, b) {
 }
 
 
+
 const status = {
     leftOperand: null,
     operator: null,
@@ -48,6 +57,30 @@ document.querySelectorAll('button').forEach((btn) =>
 const screen = document.querySelector('#screen');
 
 
+function addOnScreen(value) {
+    if (value == '-' && screen.innerText !== "0") {
+        if (screen.innerText.indexOf('-') == -1) {
+            screen.innerText = '-' + screen.innerText;
+        } else {
+            screen.innerText = screen.innerText.substr(1);
+        }
+    } else if (value == '.' && screen.innerText.indexOf('.') == -1) {
+        if (screen.innerText.length - (screen.innerText.indexOf('-') == -1 ? 0 : 1) + 2
+            <= maxLength) {
+            screen.innerText += '.';
+        }
+    } else {
+        if (screen.innerText === "0") {
+            if (value !== "0") {
+                screen.innerText = value;
+            }
+        } else if (screen.innerText.length - (screen.innerText.indexOf('-') == -1 ? 0 : 1) + 1
+            <= maxLength) {
+            screen.innerText += value;
+        }
+    }
+}
+
 function userPressButton(event) {
 
     if (event.target.classList.contains('btn-number')) {
@@ -56,11 +89,7 @@ function userPressButton(event) {
             screen.innerText = "0";
             status.input = true;
         }
-        if (screen.innerText === "0") {
-            screen.innerText = event.target.value;
-        } else if (event.target.value !== "0" || screen.innerText !== "0") {
-            screen.innerText += event.target.value;
-        }
+        addOnScreen(event.target.value);
     } else if (event.target.value == "clear") {
         let len = screen.innerText.length;
         if (screen.innerText.indexOf('-') != -1) len--;
@@ -70,13 +99,7 @@ function userPressButton(event) {
             screen.innerText = screen.innerText.substr(0, screen.innerText.length - 1);
         }
     } else if (event.target.value == "negative" && status.input) {
-        if (screen.innerText !== "0") {
-            if (screen.innerText.indexOf('-') == -1) {
-                screen.innerText = '-' + screen.innerText;
-            } else {
-                screen.innerText = screen.innerText.substr(1);
-            }
-        }
+        addOnScreen('-');
     } else if (event.target.value === "add" ||
         event.target.value === "subtract" ||
         event.target.value === "multiply" ||
@@ -118,14 +141,12 @@ function userPressButton(event) {
         status.operator = null;
         status.input = true;
     } else if (event.target.value == "float" && status.input) {
-        if (screen.innerText.indexOf('.') == -1) {
-            screen.innerText += '.';
-        }
+        addOnScreen('.');
     }
 }
 
 /*
 TODO:
-1)round calculated result, min/max input
+1)min/max input
 2)key binds
 */
