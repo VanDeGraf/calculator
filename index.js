@@ -52,7 +52,7 @@ function userPressButton(event) {
 
     if (event.target.classList.contains('btn-number')) {
         if (!status.input) {
-            status.leftOperand = parseInt(screen.innerText);
+            if (screen.innerText !== "Really?") status.leftOperand = parseInt(screen.innerText);
             screen.innerText = "0";
         }
         if (screen.innerText === "0") {
@@ -87,18 +87,28 @@ function userPressButton(event) {
         } else if (status.wait === 'calculate') {
             status.leftOperand = operate(status.operator, status.leftOperand,
                 parseInt(screen.innerText));
-            status.operator = event.target.value;
-            screen.innerText = status.leftOperand;
             status.input = false;
+            if (status.leftOperand == Infinity) {
+                status.operator = null;
+                status.wait = 'operator';
+                screen.innerText = "Really?";
+            } else {
+                status.operator = event.target.value;
+                screen.innerText = status.leftOperand;
+            }
         }
     } else if (event.target.value == "calculate") {
         if (status.wait === 'calculate') {
             status.leftOperand = operate(status.operator, status.leftOperand,
                 parseInt(screen.innerText));
-            status.operator = null;
-            screen.innerText = status.leftOperand;
             status.input = false;
+            status.operator = null;
             status.wait = 'operator';
+            if (status.leftOperand == Infinity) {
+                screen.innerText = "Really?";
+            } else {
+                screen.innerText = status.leftOperand;
+            }
         }
     } else if (event.target.value == "reset") {
         screen.innerText = "0";
@@ -111,7 +121,7 @@ function userPressButton(event) {
 
 /*
 TODO:
-1)Division by zero
 2)float numbers
 3)round calculated result, min/max input
+4)key binds
 */
