@@ -1,68 +1,35 @@
 const maxLength = 12;
 
-function round(operationResult) {
-    const len = maxLength - (parseInt(operationResult) + "").length - 1;
-    return Math.round(operationResult * Math.pow(10, len)) / Math.pow(10, len);
-}
-
-function add(a, b) {
-    return a + b;
-}
-
-function subtract(a, b) {
-    return round(a - b);
-}
-
-function multiply(a, b) {
-    return a * b;
-}
-
-
-function divide(a, b) {
-    return round(a / b);
-}
-
-function operate(operator, a, b) {
-    switch (operator) {
-        case 'add':
-            return add(a, b);
-            break;
-        case 'subtract':
-            return subtract(a, b);
-            break;
-        case 'multiply':
-            return multiply(a, b);
-            break;
-        case 'divide':
-            return divide(a, b);
-            break;
-
-        default:
-            console.warn('Wrong operator:' + operator);
-            break;
-    }
-}
-
-
-
 const status = {
     leftOperand: null,
     operator: null,
     wait: 'operator',
     input: true,
 }
-document.querySelectorAll('button').forEach((btn) => {
-    btn.addEventListener('click', userPressButton);
-});
-document.addEventListener('keydown', (e) => {
-    const btn = document.querySelector(`button[data-key="${e.keyCode}"]`)
-    if (btn) btn.click();
-});
-
-
 
 const screen = document.querySelector('#screen');
 
+function round(operationResult) {
+    const len = maxLength - (parseInt(operationResult) + "").length - 1;
+    return Math.round(operationResult * Math.pow(10, len)) / Math.pow(10, len);
+}
+
+function operate(operator, a, b) {
+    switch (operator) {
+        case 'add':
+            return a + b;
+            break;
+        case 'subtract':
+            return round(a - b);
+            break;
+        case 'multiply':
+            return a * b;
+            break;
+        case 'divide':
+            return round(a / b);
+            break;
+    }
+}
 
 function addOnScreen(value) {
     if (value == '-' && screen.innerText !== "0") {
@@ -88,6 +55,23 @@ function addOnScreen(value) {
     }
 }
 
+function checkResultException(result) {
+    if (result == Infinity || !result) {
+        reset(false, "Really?");
+        return false;
+    } else {
+        return true;
+    }
+}
+
+function reset(input = true, screenText = "0") {
+    screen.innerText = screenText;
+    status.wait = 'operator';
+    status.leftOperand = null;
+    status.operator = null;
+    status.input = input;
+}
+
 function userPressButton(event) {
 
     if (event.target.classList.contains('btn-number')) {
@@ -107,10 +91,7 @@ function userPressButton(event) {
         }
     } else if (event.target.value == "negative" && status.input) {
         addOnScreen('-');
-    } else if (event.target.value === "add" ||
-        event.target.value === "subtract" ||
-        event.target.value === "multiply" ||
-        event.target.value === "divide") {
+    } else if (["add", "subtract", "multiply", "divide"].includes(event.target.value)) {
         if (status.wait === 'operator') {
             status.operator = event.target.value;
             status.input = false;
@@ -118,41 +99,30 @@ function userPressButton(event) {
         } else if (status.wait === 'calculate') {
             status.leftOperand = operate(status.operator, status.leftOperand,
                 parseFloat(screen.innerText));
-            status.input = false;
-            if (!status.leftOperand == Infinity || !status.leftOperand) {
-                status.operator = null;
-                status.wait = 'operator';
-                screen.innerText = "Really?";
-            } else {
+            if (checkResultException(status.leftOperand)) {
+                status.input = false;
                 status.operator = event.target.value;
                 screen.innerText = status.leftOperand;
             }
         }
-    } else if (event.target.value == "calculate") {
-        if (status.wait === 'calculate') {
-            status.leftOperand = operate(status.operator, status.leftOperand,
-                parseFloat(screen.innerText));
-            status.input = false;
-            status.operator = null;
-            status.wait = 'operator';
-            if (status.leftOperand == Infinity || !status.leftOperand) {
-                screen.innerText = "Really?";
-            } else {
-                screen.innerText = status.leftOperand;
-            }
+    } else if (event.target.value == "calculate" && status.wait === 'calculate') {
+        status.leftOperand = operate(status.operator, status.leftOperand,
+            parseFloat(screen.innerText));
+        if (checkResultException(status.leftOperand)) {
+            reset(false, status.leftOperand);
         }
     } else if (event.target.value == "reset") {
-        screen.innerText = "0";
-        status.wait = 'operator';
-        status.leftOperand = null;
-        status.operator = null;
-        status.input = true;
+        reset();
     } else if (event.target.value == "float" && status.input) {
         addOnScreen('.');
     }
 }
 
-/*
-TODO:
-1)min/max input
-*/
+
+document.querySelectorAll('button').forEach((btn) => {
+    btn.addEventListener('click', userPressButton);
+});
+document.addEventListener('keydown', (e) => {
+    const btn = document.querySelector(`button[data-key="${e.keyCode}"]`)
+    if (btn) btn.click();
+});
