@@ -52,8 +52,9 @@ function userPressButton(event) {
 
     if (event.target.classList.contains('btn-number')) {
         if (!status.input) {
-            if (screen.innerText !== "Really?") status.leftOperand = parseInt(screen.innerText);
+            if (screen.innerText !== "Really?") status.leftOperand = parseFloat(screen.innerText);
             screen.innerText = "0";
+            status.input = true;
         }
         if (screen.innerText === "0") {
             screen.innerText = event.target.value;
@@ -68,7 +69,7 @@ function userPressButton(event) {
         } else {
             screen.innerText = screen.innerText.substr(0, screen.innerText.length - 1);
         }
-    } else if (event.target.value == "negative") {
+    } else if (event.target.value == "negative" && status.input) {
         if (screen.innerText !== "0") {
             if (screen.innerText.indexOf('-') == -1) {
                 screen.innerText = '-' + screen.innerText;
@@ -86,9 +87,9 @@ function userPressButton(event) {
             status.wait = 'calculate';
         } else if (status.wait === 'calculate') {
             status.leftOperand = operate(status.operator, status.leftOperand,
-                parseInt(screen.innerText));
+                parseFloat(screen.innerText));
             status.input = false;
-            if (status.leftOperand == Infinity) {
+            if (!status.leftOperand == Infinity || !status.leftOperand) {
                 status.operator = null;
                 status.wait = 'operator';
                 screen.innerText = "Really?";
@@ -100,11 +101,11 @@ function userPressButton(event) {
     } else if (event.target.value == "calculate") {
         if (status.wait === 'calculate') {
             status.leftOperand = operate(status.operator, status.leftOperand,
-                parseInt(screen.innerText));
+                parseFloat(screen.innerText));
             status.input = false;
             status.operator = null;
             status.wait = 'operator';
-            if (status.leftOperand == Infinity) {
+            if (status.leftOperand == Infinity || !status.leftOperand) {
                 screen.innerText = "Really?";
             } else {
                 screen.innerText = status.leftOperand;
@@ -116,12 +117,15 @@ function userPressButton(event) {
         status.leftOperand = null;
         status.operator = null;
         status.input = true;
+    } else if (event.target.value == "float" && status.input) {
+        if (screen.innerText.indexOf('.') == -1) {
+            screen.innerText += '.';
+        }
     }
 }
 
 /*
 TODO:
-2)float numbers
-3)round calculated result, min/max input
-4)key binds
+1)round calculated result, min/max input
+2)key binds
 */
